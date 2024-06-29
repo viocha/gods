@@ -1,4 +1,4 @@
-module github.com/viocha/godsge
+module github.com/viocha/gods
 
 go 1.22
 
