@@ -15,28 +15,28 @@ import (
 
 // --------------------双向链表节点--------------------
 
-type ListNode[T any] struct {
+type LinkedListNode[T any] struct {
 	Val        T
-	prev, next *ListNode[T]
+	prev, next *LinkedListNode[T]
 	list       *List[T]
 }
 
-func newListNode[T any](val T, list *List[T]) *ListNode[T] { return &ListNode[T]{Val: val, list: list} }
-func (o *ListNode[T]) insAfter(mark *ListNode[T]) *ListNode[T] {
+func newListNode[T any](val T, list *List[T]) *LinkedListNode[T] { return &LinkedListNode[T]{Val: val, list: list} }
+func (o *LinkedListNode[T]) insAfter(mark *LinkedListNode[T]) *LinkedListNode[T] {
 	nex := mark.next
 	mark.next, nex.prev = o, o
 	o.prev, o.next = mark, nex
 	*o.list.len++
 	return o
 }
-func (o *ListNode[T]) insBefore(mark *ListNode[T]) *ListNode[T] {
+func (o *LinkedListNode[T]) insBefore(mark *LinkedListNode[T]) *LinkedListNode[T] {
 	pre := mark.prev
 	pre.next, mark.prev = o, o
 	o.prev, o.next = pre, mark
 	*o.list.len++
 	return o
 }
-func (o *ListNode[T]) remove() *ListNode[T] {
+func (o *LinkedListNode[T]) remove() *LinkedListNode[T] {
 	pre, nex := o.prev, o.next
 	pre.next, nex.prev = nex, pre
 	o.prev, o.next = nil, nil
@@ -44,13 +44,13 @@ func (o *ListNode[T]) remove() *ListNode[T] {
 	return o
 }
 
-func (o *ListNode[T]) Next() *ListNode[T] {
+func (o *LinkedListNode[T]) Next() *LinkedListNode[T] {
 	if o.next == o.list.root {
 		return nil
 	}
 	return o.next
 }
-func (o *ListNode[T]) Prev() *ListNode[T] {
+func (o *LinkedListNode[T]) Prev() *LinkedListNode[T] {
 	if o.prev == o.list.root {
 		return nil
 	}
@@ -60,7 +60,7 @@ func (o *ListNode[T]) Prev() *ListNode[T] {
 // --------------------链表定义--------------------
 
 type List[T any] struct {
-	root *ListNode[T]
+	root *LinkedListNode[T]
 	len  *int
 }
 
@@ -71,7 +71,7 @@ func NewList[T any]() List[T] {
 	o.root = root
 	return o
 }
-func (o List[T]) NewNode(val T) *ListNode[T] { return newListNode[T](val, &o) }
+func (o List[T]) NewNode(val T) *LinkedListNode[T] { return newListNode[T](val, &o) }
 
 // ---------------ValueContainer接口---------------
 func (o List[T]) Len() int { return *o.len }
@@ -106,37 +106,37 @@ func (o List[T]) String() string { return "List" + fmt.Sprint(o.ToSlice()) }
 // --------------------List接口--------------------
 
 // 基本操作
-func (o List[T]) Front() *ListNode[T] {
+func (o List[T]) Front() *LinkedListNode[T] {
 	if o.Len() == 0 {
 		return nil
 	}
 	return o.root.next
 }
-func (o List[T]) Back() *ListNode[T] {
+func (o List[T]) Back() *LinkedListNode[T] {
 	if o.Len() == 0 {
 		return nil
 	}
 	return o.root.prev
 }
 
-func (o List[T]) PushFront(val T) *ListNode[T] { return o.InsAfter(val, o.root) }
-func (o List[T]) PushBack(val T) *ListNode[T]  { return o.InsBefore(val, o.root) }
-func (o List[T]) InsAfter(val T, mark *ListNode[T]) *ListNode[T] {
+func (o List[T]) PushFront(val T) *LinkedListNode[T] { return o.InsAfter(val, o.root) }
+func (o List[T]) PushBack(val T) *LinkedListNode[T]  { return o.InsBefore(val, o.root) }
+func (o List[T]) InsAfter(val T, mark *LinkedListNode[T]) *LinkedListNode[T] {
 	return o.NewNode(val).insAfter(mark)
 }
-func (o List[T]) InsBefore(val T, mark *ListNode[T]) *ListNode[T] {
+func (o List[T]) InsBefore(val T, mark *LinkedListNode[T]) *LinkedListNode[T] {
 	return o.NewNode(val).insBefore(mark)
 }
 
-func (o List[T]) Remove(node *ListNode[T]) T { return node.remove().Val }
-func (o List[T]) PopFront() *ListNode[T]     { return o.root.next.remove() }
-func (o List[T]) PopBack() *ListNode[T]      { return o.root.prev.remove() }
+func (o List[T]) Remove(node *LinkedListNode[T]) T { return node.remove().Val }
+func (o List[T]) PopFront() *LinkedListNode[T]     { return o.root.next.remove() }
+func (o List[T]) PopBack() *LinkedListNode[T]      { return o.root.prev.remove() }
 
 // 移动节点
-func (o List[T]) MoveAfter(node, mark *ListNode[T]) T  { return node.remove().insAfter(mark).Val }
-func (o List[T]) MoveBefore(node, mark *ListNode[T]) T { return node.remove().insBefore(mark).Val }
-func (o List[T]) MoveToFront(node *ListNode[T]) T      { return o.MoveAfter(node, o.root) }
-func (o List[T]) MoveToBack(node *ListNode[T]) T       { return o.MoveBefore(node, o.root) }
+func (o List[T]) MoveAfter(node, mark *LinkedListNode[T]) T  { return node.remove().insAfter(mark).Val }
+func (o List[T]) MoveBefore(node, mark *LinkedListNode[T]) T { return node.remove().insBefore(mark).Val }
+func (o List[T]) MoveToFront(node *LinkedListNode[T]) T      { return o.MoveAfter(node, o.root) }
+func (o List[T]) MoveToBack(node *LinkedListNode[T]) T       { return o.MoveBefore(node, o.root) }
 
 // ===================================动态数组===================================
 type Array[T any] struct {
