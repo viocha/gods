@@ -1,4 +1,4 @@
-package main
+package gods
 
 import (
 	"container/list"
